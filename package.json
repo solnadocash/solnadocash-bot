@@ -1,0 +1,29 @@
+{
+  "name": "solnadocash-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot for private SOL transfers",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": ["solana", "privacy", "telegram", "bot"],
+  "author": "solnadocash",
+  "license": "MIT",
+  "dependencies": {
+    "@solana/web3.js": "^1.95.4",
+    "grammy": "^1.21.1",
+    "privacycash": "^1.1.7",
+    "bs58": "^6.0.0",
+    "better-sqlite3": "^9.4.3",
+    "dotenv": "^16.4.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
+
