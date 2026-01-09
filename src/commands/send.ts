@@ -52,8 +52,8 @@ export async function sendCommand(ctx: Context) {
 
   // Create transfer in database
   const transferId = createTransfer({
-    odUserId: ctx.from?.id || 0,
-    odUserName: ctx.from?.username || 'unknown',
+    tgUserId: ctx.from?.id || 0,
+    tgUserName: ctx.from?.username || 'unknown',
     amount,
     recipient,
     tempAddress,
