@@ -1,6 +1,6 @@
 import { Connection, Keypair, PublicKey, LAMPORTS_PER_SOL, Transaction, SystemProgram, sendAndConfirmTransaction } from '@solana/web3.js';
 import bs58 from 'bs58';
-import { Transfer, updateTransferStatus } from './db';
+import { Transfer, updateTransferStatus } from './db.js';
 import { PrivacyCash } from 'privacycash';
 
 function getRpcUrl() {
@@ -97,6 +97,7 @@ export async function executePrivateTransfer(transfer: Transfer): Promise<void> 
   } catch (err: any) {
     console.error(`❌ Transfer ${transfer.id} failed:`, err.message);
     updateTransferStatus(transfer.id, 'failed');
+    throw err; // Re-throw so watcher can notify user
   }
 }
 

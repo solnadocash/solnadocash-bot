@@ -1,6 +1,7 @@
 {
   "name": "solnadocash-bot",
   "version": "1.0.0",
+  "type": "module",
   "description": "Telegram bot for private SOL transfers",
   "main": "dist/index.js",
   "scripts": {

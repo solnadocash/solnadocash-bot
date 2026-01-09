@@ -1,7 +1,7 @@
 import { Context } from 'grammy';
 import { PublicKey, Keypair } from '@solana/web3.js';
 import bs58 from 'bs58';
-import { createTransfer, getTransfer } from '../db';
+import { createTransfer, getTransfer } from '../db.js';
 
 export async function sendCommand(ctx: Context) {
   const text = ctx.message?.text || '';

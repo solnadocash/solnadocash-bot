@@ -3,8 +3,8 @@ import { config } from 'dotenv';
 config();
 
 import { Bot, Context, session } from 'grammy';
-import { setupCommands } from './commands';
-import { setupPaymentWatcher } from './watcher';
+import { setupCommands } from './commands/index.js';
+import { setupPaymentWatcher } from './watcher.js';
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 if (!BOT_TOKEN) {

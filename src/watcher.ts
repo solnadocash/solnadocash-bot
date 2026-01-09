@@ -1,7 +1,7 @@
 import { Connection, PublicKey, LAMPORTS_PER_SOL, Keypair } from '@solana/web3.js';
 import bs58 from 'bs58';
-import { getPendingTransfers, updateTransferStatus, expireOldTransfers, Transfer, getTransfer } from './db';
-import { executePrivateTransfer } from './transfer';
+import { getPendingTransfers, updateTransferStatus, expireOldTransfers, Transfer, getTransfer } from './db.js';
+import { executePrivateTransfer } from './transfer.js';
 import { Bot } from 'grammy';
 
 let connection: Connection | null = null;

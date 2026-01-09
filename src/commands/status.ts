@@ -1,5 +1,5 @@
 import { Context } from 'grammy';
-import { getTransfer } from '../db';
+import { getTransfer } from '../db.js';
 
 export async function statusCommand(ctx: Context) {
   const text = ctx.message?.text || '';
