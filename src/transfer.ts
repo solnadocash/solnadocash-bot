@@ -3,25 +3,32 @@ import bs58 from 'bs58';
 import { Transfer, updateTransferStatus } from './db';
 // import { PrivacyCash } from 'privacycash'; // Uncomment when ready
 
-const RPC_URL = process.env.RPC_URL || 'https://api.mainnet-beta.solana.com';
-const RELAYER_KEY = process.env.RELAYER_KEY;
-
-if (!RELAYER_KEY) {
-  console.warn('⚠️ RELAYER_KEY not set - transfers will fail');
+function getRpcUrl() {
+  return process.env.RPC_URL || 'https://api.mainnet-beta.solana.com';
 }
 
-const connection = new Connection(RPC_URL, 'confirmed');
+function getRelayerKey() {
+  return process.env.RELAYER_KEY;
+}
+
+let connection: Connection;
 
 export async function executePrivateTransfer(transfer: Transfer): Promise<void> {
   console.log(`🔄 Executing private transfer ${transfer.id}`);
+  
+  // Initialize connection if not already
+  if (!connection) {
+    connection = new Connection(getRpcUrl(), 'confirmed');
+  }
   
   try {
     // Reconstruct temp wallet keypair
     const tempKeypair = Keypair.fromSecretKey(bs58.decode(transfer.tempSecret));
     
     // Get relayer keypair
-    if (!RELAYER_KEY) throw new Error('RELAYER_KEY not configured');
-    const relayerKeypair = Keypair.fromSecretKey(bs58.decode(RELAYER_KEY));
+    const relayerKey = getRelayerKey();
+    if (!relayerKey) throw new Error('RELAYER_KEY not configured');
+    const relayerKeypair = Keypair.fromSecretKey(bs58.decode(relayerKey));
     
     // 1. Sweep temp wallet to relayer
     updateTransferStatus(transfer.id, 'shielding');
