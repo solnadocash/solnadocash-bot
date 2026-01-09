@@ -1,14 +1,16 @@
 import { Connection, PublicKey, LAMPORTS_PER_SOL, Keypair } from '@solana/web3.js';
 import bs58 from 'bs58';
-import { getPendingTransfers, updateTransferStatus, expireOldTransfers, Transfer } from './db';
+import { getPendingTransfers, updateTransferStatus, expireOldTransfers, Transfer, getTransfer } from './db';
 import { executePrivateTransfer } from './transfer';
+import { Bot } from 'grammy';
 
-const RPC_URL = process.env.RPC_URL || 'https://api.mainnet-beta.solana.com';
 let connection: Connection | null = null;
+let botInstance: Bot | null = null;
 
 const POLL_INTERVAL = 5000; // 5 seconds
 
-export function setupPaymentWatcher() {
+export function setupPaymentWatcher(bot?: Bot) {
+  if (bot) botInstance = bot;
   console.log('👀 Payment watcher started');
   
   setInterval(async () => {
@@ -53,11 +55,44 @@ async function checkTransferPayment(transfer: Transfer) {
       
       updateTransferStatus(transfer.id, 'deposited');
       
+      // Notify user that payment received
+      await notifyUser(transfer.tgUserId, `💰 Payment received! Processing your private transfer...`);
+      
       // Execute the private transfer
-      await executePrivateTransfer(transfer);
+      try {
+        await executePrivateTransfer(transfer);
+        
+        // Get updated transfer with TX
+        const updated = getTransfer(transfer.id);
+        const txLink = updated?.withdrawTx 
+          ? `\n\n[View on Solscan](https://solscan.io/tx/${updated.withdrawTx})`
+          : '';
+        
+        await notifyUser(transfer.tgUserId, 
+          `✅ *Private transfer complete!*\n\n` +
+          `Sent: ${transfer.amount} SOL\n` +
+          `To: \`${transfer.recipient.slice(0, 8)}...${transfer.recipient.slice(-8)}\`${txLink}`
+        );
+      } catch (err: any) {
+        await notifyUser(transfer.tgUserId, 
+          `❌ Transfer failed: ${err.message}\n\nContact support with ID: ${transfer.id}`
+        );
+      }
     }
   } catch (err) {
     console.error(`Error checking payment for ${transfer.id}:`, err);
+  }
+}
+
+async function notifyUser(userId: number, message: string) {
+  if (!botInstance || !userId) return;
+  try {
+    await botInstance.api.sendMessage(userId, message, { 
+      parse_mode: 'Markdown',
+      disable_web_page_preview: true 
+    });
+  } catch (err) {
+    console.error('Failed to notify user:', err);
   }
 }
 

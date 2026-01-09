@@ -1,7 +1,7 @@
 import { Connection, Keypair, PublicKey, LAMPORTS_PER_SOL, Transaction, SystemProgram, sendAndConfirmTransaction } from '@solana/web3.js';
 import bs58 from 'bs58';
 import { Transfer, updateTransferStatus } from './db';
-// import { PrivacyCash } from 'privacycash'; // Uncomment when ready
+import { PrivacyCash } from 'privacycash';
 
 function getRpcUrl() {
   return process.env.RPC_URL || 'https://api.mainnet-beta.solana.com';
@@ -56,25 +56,33 @@ export async function executePrivateTransfer(transfer: Transfer): Promise<void> 
     const depositAmount = sweepAmount - RELAYER_FEE;
     
     // 3. Initialize PrivacyCash and execute deposit + withdraw
-    updateTransferStatus(transfer.id, 'withdrawing');
+    console.log(`  Depositing ${depositAmount} lamports to shielded pool...`);
     
-    /* 
-    // TODO: Uncomment when ready to integrate
     const privacyCash = new PrivacyCash({
-      RPC_url: RPC_URL,
+      RPC_url: getRpcUrl(),
       owner: Array.from(relayerKeypair.secretKey),
       enableDebug: true
     });
     
     // Deposit to pool
     await privacyCash.deposit({ lamports: depositAmount });
+    console.log(`  Deposit complete, waiting for pool update...`);
     
     // Wait for pool update
-    await new Promise(r => setTimeout(r, 5000));
+    await new Promise(r => setTimeout(r, 8000));
     
     // Get pool balance
+    updateTransferStatus(transfer.id, 'withdrawing');
     const balance = await privacyCash.getPrivateBalance();
-    const poolBalance = typeof balance === 'object' ? balance.lamports : balance;
+    let poolBalance: number;
+    if (typeof balance === 'object' && balance !== null) {
+      poolBalance = (balance as any).lamports || depositAmount;
+    } else {
+      poolBalance = balance as number || depositAmount;
+    }
+    
+    console.log(`  Pool balance: ${poolBalance / LAMPORTS_PER_SOL} SOL`);
+    console.log(`  Withdrawing to ${transfer.recipient}...`);
     
     // Withdraw to recipient
     const withdrawResult = await privacyCash.withdraw({
@@ -82,14 +90,9 @@ export async function executePrivateTransfer(transfer: Transfer): Promise<void> 
       recipientAddress: transfer.recipient
     });
     
-    updateTransferStatus(transfer.id, 'complete', { withdraw: withdrawResult.tx });
-    console.log(`✅ Transfer ${transfer.id} complete: ${withdrawResult.tx}`);
-    */
-    
-    // Placeholder for now - just log
-    console.log(`  Would deposit ${depositAmount} lamports and withdraw to ${transfer.recipient}`);
-    updateTransferStatus(transfer.id, 'complete');
-    console.log(`✅ Transfer ${transfer.id} marked complete (placeholder)`);
+    const txSig = (withdrawResult as any)?.tx || (withdrawResult as any)?.signature || 'unknown';
+    updateTransferStatus(transfer.id, 'complete', { withdraw: txSig });
+    console.log(`✅ Transfer ${transfer.id} complete: ${txSig}`);
     
   } catch (err: any) {
     console.error(`❌ Transfer ${transfer.id} failed:`, err.message);

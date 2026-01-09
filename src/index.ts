@@ -42,6 +42,6 @@ console.log('🤖 Solnado Cash Bot starting...');
 bot.start();
 console.log('✅ Bot is running!');
 
-// Start payment watcher
-setupPaymentWatcher();
+// Start payment watcher with bot instance for notifications
+setupPaymentWatcher(bot);
 
