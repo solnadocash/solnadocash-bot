@@ -12,7 +12,7 @@ Send SOL privately to any wallet. No on-chain link between you and the recipient
 3️⃣ We shield and deliver privately
 
 *Example:*
-\`/send 0.5 FG7qdt3yeurMEA2mcc3Dd1KGQT4xzhqfh1o9wKmYQNZQ\`
+\`/send 0.5 <recipient_wallet_address>\`
 
 *Commands:*
 /send - Start a private transfer
