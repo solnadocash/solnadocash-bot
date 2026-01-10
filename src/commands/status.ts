@@ -42,7 +42,7 @@ export async function statusCommand(ctx: Context) {
 *Recipient:* \`${transfer.recipient.slice(0, 8)}...${transfer.recipient.slice(-8)}\`
 *Status:* ${transfer.status.toUpperCase()}
 ${transfer.withdrawTx ? `*TX:* [View on Solscan](https://solscan.io/tx/${transfer.withdrawTx})` : ''}`,
-    { parse_mode: 'Markdown', disable_web_page_preview: true }
+    { parse_mode: 'Markdown', link_preview_options: { is_disabled: true } }
   );
 }
 

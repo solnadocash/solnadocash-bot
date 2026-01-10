@@ -72,7 +72,7 @@ async function notifyUser(userId: number, message: string) {
   try {
     await botInstance.api.sendMessage(userId, message, { 
       parse_mode: 'Markdown',
-      disable_web_page_preview: true 
+      link_preview_options: { is_disabled: true } 
     });
   } catch (err) {
     console.error('Failed to notify user:', err);

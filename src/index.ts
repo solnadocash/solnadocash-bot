@@ -2,7 +2,7 @@
 import { config } from 'dotenv';
 config();
 
-import { Bot, Context, session } from 'grammy';
+import { Bot } from 'grammy';
 import { setupCommands } from './commands/index.js';
 import { setupPaymentWatcher } from './watcher.js';
 
@@ -13,21 +13,6 @@ if (!BOT_TOKEN) {
 
 // Create bot instance
 const bot = new Bot(BOT_TOKEN);
-
-// Session middleware for tracking user state
-interface SessionData {
-  pendingTransfer?: {
-    amount: number;
-    recipient: string;
-    tempWallet: string;
-    sessionId: string;
-    createdAt: number;
-  };
-}
-
-bot.use(session({
-  initial: (): SessionData => ({})
-}));
 
 // Setup commands
 setupCommands(bot);
