@@ -19,7 +19,7 @@ export async function helpCommand(ctx: Context) {
 5. Recipient gets funds with no link to you
 
 *Example:*
-\`/send 1 FG7qdt3yeurMEA2mcc3Dd1KGQT4xzhqfh1o9wKmYQNZQ\`
+\`/send 1 <recipient_wallet_address>\`
 
 *Support:*
 Twitter: @solnadocash
